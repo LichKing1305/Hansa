@@ -128,7 +128,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 137507005}
-  - component: {fileID: 137507004}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -136,23 +135,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &137507004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 137507003}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e9683de298cfb64885a053212136770, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _firstPersonCamera: {fileID: 1965439438}
-  _thirdPersonCamera: {fileID: 309921808}
-  _switchKey: 118
-  _player: {fileID: 167718102}
-  _syncPlayerPosition: 1
 --- !u!4 &137507005
 Transform:
   m_ObjectHideFlags: 0
@@ -404,11 +386,6 @@ Mesh:
     offset: 0
     size: 0
     path: 
---- !u!20 &309921808 stripped
-Camera:
-  m_CorrespondingSourceObject: {fileID: 3201771795200705992, guid: bc3033c3f96cf7e4e8e2c6a2ef624f80, type: 3}
-  m_PrefabInstance: {fileID: 1575031023}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &475069059
 GameObject:
   m_ObjectHideFlags: 0

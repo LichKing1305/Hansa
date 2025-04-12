@@ -13,10 +13,16 @@ namespace KMVGS.FinalCharacterController
         public bool InteractHeld { get; private set; }
         public bool InteractReleased { get; private set; }
 
-        private void OnEnable()
+        public PlayerControls.PlayerLocMapsActions Player => PlayerControls.PlayerLocMaps;
+
+        private void Awake()
         {
             PlayerControls = new PlayerControls();
             PlayerControls.PlayerLocMaps.SetCallbacks(this);
+        }
+
+        private void OnEnable()
+        {
             PlayerControls.Enable();
         }
 
@@ -42,9 +48,7 @@ namespace KMVGS.FinalCharacterController
             InteractReleased = context.canceled;
         }
 
-    public void OnSwitchCamera(InputAction.CallbackContext context)
-    {
-      throw new System.NotImplementedException();
+        // Empty implementation since we handle this in PlayerController
+        public void OnSwitchCamera(InputAction.CallbackContext context) { }
     }
-  }
 }
