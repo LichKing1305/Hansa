@@ -10,6 +10,8 @@ namespace KMVGS.FinalCharacterController
     [DefaultExecutionOrder(-1)]
     public class PlayerController : MonoBehaviour
     {
+        public static PlayerController Instance {get;private set;}
+
         #region Class Variables
         [Header("Components")]
         [SerializeField] private CharacterController _characterController;
@@ -32,6 +34,7 @@ namespace KMVGS.FinalCharacterController
         public float lookSenseV = 0.1f;
         public float lookLimitV = 89f;
         public float firstPersonHeight = 1.6f;
+        public float firstPersonDistance = 1f;
 
         [Header("Jumping Settings")]
         public float jumpHeight = 2f;
@@ -47,8 +50,16 @@ namespace KMVGS.FinalCharacterController
         #endregion
     
         #region Startup
-        private void Awake()
+      private void Awake()
         {
+            // Singleton implementation
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+
             _playerLocInput = GetComponent<PlayerLocInput>();
             _playerState = GetComponent<PlayerState>();
             _playerLocInput.Player.SwitchCamera.performed += ctx => ToggleCameraMode();
@@ -56,6 +67,13 @@ namespace KMVGS.FinalCharacterController
             // Lock and hide cursor
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+        }        
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
         }
         #endregion
     
@@ -100,7 +118,7 @@ namespace KMVGS.FinalCharacterController
             }
             else // 1st-Person
             {
-                _playerCamera.transform.localPosition = new Vector3(0f, firstPersonHeight, 0f);
+                _playerCamera.transform.localPosition = new Vector3(0f, firstPersonHeight, firstPersonDistance);
             }
         }    
         #endregion

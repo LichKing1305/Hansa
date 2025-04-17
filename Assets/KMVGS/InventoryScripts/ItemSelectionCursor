@@ -1,0 +1,83 @@
+using UnityEngine;
+using UnityEngine.EventSystems;
+
+public class ItemSelectionCursor : MonoBehaviour
+{
+    [Header("Settings")]
+    public float maxPickupDistance = 5f;
+    public LayerMask itemLayer;
+    public KeyCode pickupKey = KeyCode.E;
+
+    [Header("Visuals")]
+    public GameObject selectionCursorPrefab;
+    public Vector3 cursorOffset = new Vector3(0, 0.5f, 0);
+    public Color canPickupColor = Color.green;
+    public Color cantPickupColor = Color.red;
+    
+    private GameObject currentCursor;
+    private ItemPickup selectedItem;
+    private SpriteRenderer cursorRenderer;
+    private bool isInventoryOpen;
+
+    private void Start()
+    {
+        InventoryUIController.OnInventoryToggle += OnInventoryToggle;
+    }
+
+    private void OnInventoryToggle(bool state)
+    {
+        isInventoryOpen = state;
+        if (state && currentCursor != null)
+        {
+            Destroy(currentCursor);
+        }
+    }
+
+    private void Update()
+    {
+        if (isInventoryOpen) return;
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        // Remove previous selection
+        if (selectedItem != null && currentCursor != null)
+        {
+            Destroy(currentCursor);
+            selectedItem = null;
+        }
+
+        // Check for new selection
+        if (Physics.Raycast(ray, out hit, maxPickupDistance, itemLayer))
+        {
+            selectedItem = hit.collider.GetComponent<ItemPickup>();
+            if (selectedItem != null)
+            {
+                // Create or update cursor visual
+                if (currentCursor == null)
+                {
+                    currentCursor = Instantiate(selectionCursorPrefab);
+                    cursorRenderer = currentCursor.GetComponent<SpriteRenderer>();
+                }
+
+                // Position cursor
+                currentCursor.transform.position = selectedItem.transform.position + cursorOffset;
+
+                // Visual feedback based on pickup possibility
+                bool canPickup = InventoryManager.Instance.CanAddItem(selectedItem.itemData, selectedItem.amount);
+                cursorRenderer.color = canPickup ? canPickupColor : cantPickupColor;
+
+                // Handle pickup input
+                if (Input.GetKeyDown(pickupKey) && canPickup)
+                {
+                    selectedItem.TryPickup();
+                }
+            }
+        }
+    }
+
+    private void OnDestroy()
+    {
+        InventoryUIController.OnInventoryToggle -= OnInventoryToggle;
+    }
+}
