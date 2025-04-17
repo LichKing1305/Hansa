@@ -33,10 +33,17 @@ namespace KMVGS.FinalCharacterController
         public float lookLimitV = 89f;
         public float firstPersonHeight = 1.6f;
 
+        [Header("Jumping Settings")]
+        public float jumpHeight = 2f;
+        public float gravity = -9.81f;
+        public float groundCheckDistance = 0.2f;
+
         private PlayerLocInput _playerLocInput;
         private PlayerState _playerState;
         private Vector2 _cameraRotation = Vector2.zero;
         private Vector2 _playerTargetRotation = Vector2.zero;
+        private Vector3 _velocity;
+         private bool _isGrounded;
         #endregion
     
         #region Startup
@@ -57,6 +64,7 @@ namespace KMVGS.FinalCharacterController
         {
             UpdateMovementState();
             HandleLateralMovement();
+            HandleJumping();
         }
         #endregion
     
@@ -102,26 +110,46 @@ namespace KMVGS.FinalCharacterController
         {
             Vector3 cameraForwardXZ = new Vector3(_playerCamera.transform.forward.x, 0f, _playerCamera.transform.forward.z).normalized;
             Vector3 cameraRightXZ = new Vector3(_playerCamera.transform.right.x, 0f, _playerCamera.transform.right.z).normalized;
-            
+
             Vector3 movementDirection = cameraRightXZ * _playerLocInput.MovementInput.x + 
-                                      cameraForwardXZ * _playerLocInput.MovementInput.y;
-            
+                                        cameraForwardXZ * _playerLocInput.MovementInput.y;
+
+            // Move the player faster
             Vector3 movementDelta = movementDirection * runAcceleration * Time.deltaTime;
-            Vector3 newVelocity = _characterController.velocity + movementDelta;
+            Vector3 newVelocity = new Vector3(movementDelta.x, _velocity.y, movementDelta.z); // Keep y velocity for jumping
 
             // Apply drag
             Vector3 currentDrag = newVelocity.normalized * drag * Time.deltaTime;
             newVelocity = (newVelocity.magnitude > currentDrag.magnitude) ? 
-                newVelocity - currentDrag : Vector3.zero;
-            
-            newVelocity = Vector3.ClampMagnitude(newVelocity, runSpeed);
-            _characterController.Move(newVelocity * Time.deltaTime);
+                        newVelocity - currentDrag : Vector3.zero;
+
+            newVelocity = Vector3.ClampMagnitude(newVelocity, runSpeed);  // Ensure max speed
+            _characterController.Move(newVelocity * Time.deltaTime);  // Apply movement
         }
 
         private bool IsMovingLaterally()
         {
             Vector3 lateralVelocity = new Vector3(_characterController.velocity.x, 0f, _characterController.velocity.z);
             return lateralVelocity.magnitude > movingThreshold;
+        }
+        #endregion
+
+        #region Jumping
+        private void HandleJumping()
+        {
+            _isGrounded = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance);
+
+            if (_isGrounded && _velocity.y < 0)
+            {
+                _velocity.y = -2f;
+            }
+            if (_playerLocInput.InteractPressed && _isGrounded)
+            {
+                _velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            }
+
+            _velocity.y += gravity * Time.deltaTime;
+            _characterController.Move(_velocity * Time.deltaTime);
         }
         #endregion
 

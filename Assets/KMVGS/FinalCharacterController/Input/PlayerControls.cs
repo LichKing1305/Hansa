@@ -121,9 +121,18 @@ namespace KMVGS.FinalCharacterController
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""SwitchCamera"",
+                    ""name"": ""Switch Camera"",
                     ""type"": ""Button"",
                     ""id"": ""0f8daa6f-a629-411e-adc2-60996ef9af8a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""7f1665e1-8c5e-4cb0-a045-312279ce797e"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -325,7 +334,18 @@ namespace KMVGS.FinalCharacterController
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""SwitchCamera"",
+                    ""action"": ""Switch Camera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c4ba9bb8-67dd-4635-9a71-55174ba7c3b7"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -339,7 +359,8 @@ namespace KMVGS.FinalCharacterController
             m_PlayerLocMaps_Movement = m_PlayerLocMaps.FindAction("Movement", throwIfNotFound: true);
             m_PlayerLocMaps_Look = m_PlayerLocMaps.FindAction("Look", throwIfNotFound: true);
             m_PlayerLocMaps_Interact = m_PlayerLocMaps.FindAction("Interact", throwIfNotFound: true);
-            m_PlayerLocMaps_SwitchCamera = m_PlayerLocMaps.FindAction("SwitchCamera", throwIfNotFound: true);
+            m_PlayerLocMaps_SwitchCamera = m_PlayerLocMaps.FindAction("Switch Camera", throwIfNotFound: true);
+            m_PlayerLocMaps_Jump = m_PlayerLocMaps.FindAction("Jump", throwIfNotFound: true);
         }
 
         ~@PlayerControls()
@@ -424,6 +445,7 @@ namespace KMVGS.FinalCharacterController
         private readonly InputAction m_PlayerLocMaps_Look;
         private readonly InputAction m_PlayerLocMaps_Interact;
         private readonly InputAction m_PlayerLocMaps_SwitchCamera;
+        private readonly InputAction m_PlayerLocMaps_Jump;
         /// <summary>
         /// Provides access to input actions defined in input action map "PlayerLocMaps".
         /// </summary>
@@ -451,6 +473,10 @@ namespace KMVGS.FinalCharacterController
             /// Provides access to the underlying input action "PlayerLocMaps/SwitchCamera".
             /// </summary>
             public InputAction @SwitchCamera => m_Wrapper.m_PlayerLocMaps_SwitchCamera;
+            /// <summary>
+            /// Provides access to the underlying input action "PlayerLocMaps/Jump".
+            /// </summary>
+            public InputAction @Jump => m_Wrapper.m_PlayerLocMaps_Jump;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -489,6 +515,9 @@ namespace KMVGS.FinalCharacterController
                 @SwitchCamera.started += instance.OnSwitchCamera;
                 @SwitchCamera.performed += instance.OnSwitchCamera;
                 @SwitchCamera.canceled += instance.OnSwitchCamera;
+                @Jump.started += instance.OnJump;
+                @Jump.performed += instance.OnJump;
+                @Jump.canceled += instance.OnJump;
             }
 
             /// <summary>
@@ -512,6 +541,9 @@ namespace KMVGS.FinalCharacterController
                 @SwitchCamera.started -= instance.OnSwitchCamera;
                 @SwitchCamera.performed -= instance.OnSwitchCamera;
                 @SwitchCamera.canceled -= instance.OnSwitchCamera;
+                @Jump.started -= instance.OnJump;
+                @Jump.performed -= instance.OnJump;
+                @Jump.canceled -= instance.OnJump;
             }
 
             /// <summary>
@@ -574,12 +606,19 @@ namespace KMVGS.FinalCharacterController
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnInteract(InputAction.CallbackContext context);
             /// <summary>
-            /// Method invoked when associated input action "SwitchCamera" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// Method invoked when associated input action "Switch Camera" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
             /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnSwitchCamera(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Jump" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnJump(InputAction.CallbackContext context);
         }
     }
 }

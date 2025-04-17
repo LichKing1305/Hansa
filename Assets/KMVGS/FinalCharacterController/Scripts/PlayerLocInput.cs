@@ -50,5 +50,10 @@ namespace KMVGS.FinalCharacterController
 
         // Empty implementation since we handle this in PlayerController
         public void OnSwitchCamera(InputAction.CallbackContext context) { }
+        public void OnJump(InputAction.CallbackContext context) 
+        {
+            InteractPressed = context.performed && context.phase == InputActionPhase.Performed;
+        }
+
     }
 }
