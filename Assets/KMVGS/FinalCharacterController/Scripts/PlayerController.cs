@@ -114,19 +114,27 @@ namespace KMVGS.FinalCharacterController
             Vector3 movementDirection = cameraRightXZ * _playerLocInput.MovementInput.x + 
                                         cameraForwardXZ * _playerLocInput.MovementInput.y;
 
-            // Move the player faster
-            Vector3 movementDelta = movementDirection * runAcceleration * Time.deltaTime;
-            Vector3 newVelocity = new Vector3(movementDelta.x, _velocity.y, movementDelta.z); // Keep y velocity for jumping
+            // Calculate target velocity (not multiplied by Time.deltaTime)
+            Vector3 targetVelocity = movementDirection * runSpeed;
+            
+            // Apply acceleration to current velocity
+            _velocity.x = Mathf.Lerp(_velocity.x, targetVelocity.x, runAcceleration * Time.deltaTime);
+            _velocity.z = Mathf.Lerp(_velocity.z, targetVelocity.z, runAcceleration * Time.deltaTime);
+            
+            // Apply drag only when no input is being given
+            if (_playerLocInput.MovementInput.magnitude < 0.1f)
+            {
+                _velocity.x *= (1 - drag * Time.deltaTime);
+                _velocity.z *= (1 - drag * Time.deltaTime);
+                
+                // Stop completely when velocity is very small
+                if (Mathf.Abs(_velocity.x) < 0.01f) _velocity.x = 0;
+                if (Mathf.Abs(_velocity.z) < 0.01f) _velocity.z = 0;
+            }
 
-            // Apply drag
-            Vector3 currentDrag = newVelocity.normalized * drag * Time.deltaTime;
-            newVelocity = (newVelocity.magnitude > currentDrag.magnitude) ? 
-                        newVelocity - currentDrag : Vector3.zero;
-
-            newVelocity = Vector3.ClampMagnitude(newVelocity, runSpeed);  // Ensure max speed
-            _characterController.Move(newVelocity * Time.deltaTime);  // Apply movement
+            // Move the character (only multiply by Time.deltaTime here)
+            _characterController.Move(_velocity * Time.deltaTime);
         }
-
         private bool IsMovingLaterally()
         {
             Vector3 lateralVelocity = new Vector3(_characterController.velocity.x, 0f, _characterController.velocity.z);
